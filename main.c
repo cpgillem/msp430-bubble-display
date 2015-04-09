@@ -1,4 +1,6 @@
 #include <msp430.h>
+#include "alphabet.h"
+
 /*
  * QDSP-6064
  * 4-Digit Micro Numeric Indicator
@@ -40,6 +42,13 @@ Project Specific Pinout - MSP430 Side
 1.4 --- . 1.2
 
  */
+
+/* Define positions for a character */
+#define POS_1 0b00000111
+#define POS_2 0b00001011
+#define POS_3 0b00001101
+#define POS_4 0b00001110
+
 int main(void) {
 	WDTCTL = WDTHOLD | WDTPW;
 	BCSCTL1 = CALBC1_1MHZ;
@@ -47,7 +56,7 @@ int main(void) {
 
 	/* Set anodes */
 	P1DIR = 0xff;
-	P1OUT = BIT0 | BIT5 | BIT7 | BIT4;
+	P1OUT = G;
 
 	/* Set Cathodes */
 	// P2DIR |= (BIT0 | BIT1 | BIT2 | BIT3);
@@ -55,5 +64,15 @@ int main(void) {
 	// P2OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
 	P2OUT = 0b00000000;
 
-	_BIS_SR(GIE | LPM1_bits);
+	while (1) {
+		P2OUT = POS_3;
+		P1OUT = C;
+		__delay_cycles(100);
+		P2OUT = POS_2;
+		P1OUT = P;
+		__delay_cycles(100);
+		P2OUT = POS_1;
+		P1OUT = G;
+		__delay_cycles(100);
+	}
 }
